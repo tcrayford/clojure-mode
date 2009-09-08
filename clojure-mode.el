@@ -610,29 +610,6 @@ lines to your personal Emacs config somewhere:
     (clojure-slime-config)
     (cd orig-directory)))
 
-(defun clojure-update ()
-  "Update clojure-related repositories and recompile clojure.
-
-Works with clojure etc. installed via `clojure-install'. Code
-should be checked out in the `clojure-src-root' directory."
-  (interactive)
-
-  (message "Updating...")
-  (let ((orig-directory default-directory))
-    (dolist (repo '("clojure" "clojure-contrib" "swank-clojure" "slime"))
-      (cd (concat clojure-src-root "/" repo))
-      (unless (= 0 (shell-command "git pull origin master"))
-        (error "Clojure update failed: %s" repo)))
-
-    (message "Compiling...")
-    (save-window-excursion
-      (dolist (repo '("clojure" "clojure-contrib"))
-        (cd (concat clojure-src-root "/" repo))
-        (unless (= 0 (shell-command "ant"))
-          (error "Couldn't compile Clojure."))))
-    (message "Finished updating Clojure.")
-    (cd orig-directory)))
-
 (defun clojure-enable-slime-on-existing-buffers ()
   (interactive)
   (add-hook 'clojure-mode-hook 'swank-clojure-slime-mode-hook)
