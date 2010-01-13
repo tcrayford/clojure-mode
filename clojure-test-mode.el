@@ -111,6 +111,7 @@
 (defvar clojure-test-count 0)
 (defvar clojure-test-failure-count 0)
 (defvar clojure-test-error-count 0)
+(defvar clojure-test-after-test-functions '())
 
 ;; Consts
 
@@ -155,9 +156,11 @@
   (let ((result-vars (read (cadr results))))
     ;; slime-eval-async hands us a cons with a useless car
     (mapc #'clojure-test-extract-result result-vars)
-    (message "Ran %s tests. %s failures, %s errors."
-             clojure-test-count
-             clojure-test-failure-count clojure-test-error-count)))
+    (let ((out-message
+            (format "Ran %s tests. %s failures, %s errors."
+                    clojure-test-count
+                    clojure-test-failure-count clojure-test-error-count)))
+      (run-hook-with-args 'clojure-test-after-test-functions out-message))))
 
 (defun clojure-test-extract-result (result)
   "Parse the result from a single test. May contain multiple is blocks."
