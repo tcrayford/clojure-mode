@@ -100,9 +100,9 @@
 
 (defface clojure-test-error-face
   '((((class color) (background light))
-     :underline "orange1")
+     :background "orange1")
     (((class color) (background dark))
-     :underline "orange4"))
+     :background "orange4"))
   "Face for errors in Clojure tests."
   :group 'clojure-test-mode)
 
@@ -111,13 +111,16 @@
 (defvar clojure-test-count 0)
 (defvar clojure-test-failure-count 0)
 (defvar clojure-test-error-count 0)
-(defvar clojure-test-after-test-functions '())
+
 
 ;; Consts
 
 (defconst clojure-test-ignore-results
   '(:end-test-ns :begin-test-var :end-test-var)
   "Results from test-is that we don't use")
+
+(defvar clojure-test-after-test-functions '(message)
+  "Functions that are run with the output text from running tests")
 
 ;; Support Functions
 
@@ -160,6 +163,7 @@
             (format "Ran %s tests. %s failures, %s errors."
                     clojure-test-count
                     clojure-test-failure-count clojure-test-error-count)))
+      (message out-message)
       (run-hook-with-args 'clojure-test-after-test-functions out-message))))
 
 (defun clojure-test-extract-result (result)
@@ -321,7 +325,7 @@ changing them to that color and then setting them back"
   (setq old-buffer-id-face (copy-face 'modeline-buffer-id 'old-buffer-id-face))
   (set-face-to-one-color 'modeline color)
   (set-face-to-one-color 'modeline-buffer-id color)
-  (sit-for clojure-test-flash-time)
+  (sit-for 1)
   (set-face-background 'mode-line (face-background old-background-face))
   (set-face-foreground 'mode-line (face-foreground old-background-face))
   (set-face-background 'mode-line-buffer-id (face-background old-buffer-id-face))
@@ -330,8 +334,7 @@ changing them to that color and then setting them back"
 
 (defun clojure-test-flash-modeline-with-results (test-output)
   "A hook that flashes the modeline based on test results."
-  (if
-      (string-match "0 failures" test-output)
+  (if (string-match "0 failures" test-output)
       (clojure-test-flash-modeline "#00aa00")
     (clojure-test-flash-modeline "#aa0000")))
 
