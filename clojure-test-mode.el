@@ -92,17 +92,17 @@
 
 (defface clojure-test-failure-face
   '((((class color) (background light))
-     :background "orange red") ;; TODO: Hard to read strings over this.
+     :underline "orange red") ;; TODO: Hard to read strings over this.
     (((class color) (background dark))
-     :background "firebrick"))
+     :underline "firebrick"))
   "Face for failures in Clojure tests."
   :group 'clojure-test-mode)
 
 (defface clojure-test-error-face
   '((((class color) (background light))
-     :background "orange1")
+     :underline "orange1")
     (((class color) (background dark))
-     :background "orange4"))
+     :underline "orange4"))
   "Face for errors in Clojure tests."
   :group 'clojure-test-mode)
 
