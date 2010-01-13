@@ -309,5 +309,33 @@ Also will enable it if the file is in a test directory."
           (clojure-test-mode t))))
   (add-hook 'clojure-mode-hook 'clojure-test-maybe-enable))
 
+(defun clojure-test-set-face-to-one-color (face color)
+  "Sets both the foreground and the background of a face to a color."
+  (set-face-background face color)
+  (set-face-foreground face color))
+
+(defun clojure-test-flash-modeline (color)
+  "Flashes the modeline a particular color by saving the current modeline faces;
+changing them to that color and then setting them back"
+  (setq old-background-face (copy-face 'modeline 'old-background-face))
+  (setq old-buffer-id-face (copy-face 'modeline-buffer-id 'old-buffer-id-face))
+  (set-face-to-one-color 'modeline color)
+  (set-face-to-one-color 'modeline-buffer-id color)
+  (sit-for clojure-test-flash-time)
+  (set-face-background 'mode-line (face-background old-background-face))
+  (set-face-foreground 'mode-line (face-foreground old-background-face))
+  (set-face-background 'mode-line-buffer-id (face-background old-buffer-id-face))
+  (set-face-foreground 'mode-line-buffer-id (face-foreground old-buffer-id-face))
+  (redraw-modeline))
+
+(defun clojure-test-flash-modeline-with-results (test-output)
+  "A hook that flashes the modeline based on test results."
+  (if
+      (string-match "0 failures" test-output)
+      (clojure-test-flash-modeline "#00aa00")
+    (clojure-test-flash-modeline "#aa0000")))
+
+(add-hook 'clojure-test-after-test-functions 'clojure-test-flash-modeline-with-results)
+
 (provide 'clojure-test-mode)
 ;;; clojure-test-mode.el ends here
